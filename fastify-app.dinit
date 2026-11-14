@@ -1,0 +1,7 @@
+type		= process
+run-as		= fastify
+working-dir	= /opt/fastify-app
+command		= /usr/bin/node index.js
+restart		= true
+after		= network.target
+before 		= multi-user.target
