@@ -22,7 +22,7 @@ CREATE TABLE Post (
     PublicationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-See (Secrets)[#Secrets] to get the password set up
+See [Secrets](#Secrets) to get the password set up
 
 ## AutoRun
 I made a dinit script to start the server automatically on-boot, under the user fastify, containing the server in `/opt/fastify-app/`
