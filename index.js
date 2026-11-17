@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import fastifyMysql from '@fastify/mysql'
+import fastifyHttpQuery from '@thecodepace/fastify-http-query'
 import { blogsRoutes } from './routes/blogs.js'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
@@ -36,7 +37,7 @@ const fastify = Fastify({
   trustProxy: '127.0.0.1'
 })
 
-const dbPassword = decryptSecret('secret.enc', '/opt/fastify-app/.secrets/key');
+const dbPassword = decryptSecret('secret.enc', '.secrets/key');
 
 fastify.register(fastifyMysql, {
   promise: true,
@@ -48,6 +49,8 @@ fastify.register(fastifyMysql, {
 })
 
 dbPassword.fill(0);
+
+fastify.register(fastifyHttpQuery)
 
 fastify.register(blogsRoutes)
 

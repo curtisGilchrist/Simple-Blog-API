@@ -1,15 +1,26 @@
 {
-  "name": "blog-api",
+  "name": "simple-blog-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "a simple blog api",
+  "keywords": [],
+  "homepage": "https://github.com/curtisGilchrist/Simple-Blog-API#readme",
+  "bugs": {
+    "url": "https://github.com/curtisGilchrist/Simple-Blog-API/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/curtisGilchrist/Simple-Blog-API.git"
+  },
+  "license": "MIT",
+  "author": "Curtis Gilchrist",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "type": "module",
   "dependencies": {
     "@fastify/mysql": "^5.0.5",
+    "@thecodepace/fastify-http-query": "^0.0.5",
     "fastify": "^5.12.8"
   }
 }

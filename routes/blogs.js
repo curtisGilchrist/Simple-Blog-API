@@ -11,13 +11,21 @@ const blogSchema = {
   }
 }
 
+const searchSchema = {
+  body: {
+    type: 'object',
+    properties: { q: { type: 'string' } },
+    required: ['q']
+  }
+}
+
 export async function blogsRoutes(fastify) {
   // CREATE
   fastify.post('/blogs', { schema: blogSchema }, async (request, reply) => {
     const { title, content, category } = request.body
     const [result] = await fastify.mysql.query(
       'INSERT INTO Posts (Title, Content, Category) VALUES (?, ?, ?)',
-      [title, content, category]
+      [title, title + '\n' + content, category]
     )
     reply.code(201)
     return { id: result.insertId, title, content, category }
@@ -26,7 +34,7 @@ export async function blogsRoutes(fastify) {
   // READ all
   fastify.get('/blogs', async () => {
     const [rows] = await fastify.mysql.query(
-      'SELECT PostID, Title, Content, PublicationDate FROM Posts ORDER BY PostID DESC'
+      'SELECT PostID, Title, PublicationDate FROM Posts ORDER BY PostID DESC'
     )
     return rows
   })
@@ -34,7 +42,7 @@ export async function blogsRoutes(fastify) {
   // READ one
   fastify.get('/blogs/:id', async (request, reply) => {
     const [rows] = await fastify.mysql.query(
-      'SELECT PostID, Title, Content, PublicationDate FROM Posts WHERE PostID = ?',
+      'SELECT PostID, Content, PublicationDate FROM Posts WHERE PostID = ?',
       [request.params.id]
     )
     if (rows.length === 0) {
@@ -49,12 +57,24 @@ export async function blogsRoutes(fastify) {
     const { title, content, category } = request.body
     const [result] = await fastify.mysql.query(
       'UPDATE Posts SET Title = ?, Content = ?, Category = ? WHERE PostID = ?',
-      [title, content, category, request.params.id]
+      [title, title + '\n' + content, category, request.params.id]
     )
     if (result.affectedRow === 0) {
       reply.code(404)
       return { error: 'blog not found' }
     }
     reply.code(204)
+  })
+
+  // QUERY
+  fastify.query('/blogs/search', { schema: searchSchema }, async (request, reply) => {
+    const [rows] = await fastify.mysql.query(
+      `SELECT PostID, Title, PublicationDate FROM Posts WHERE MATCH(Content) AGAINST('${request.body.q}');`
+    )
+    reply.code(200)
+    if (rows.length === 0) {
+      return;
+    }
+    return rows;
   })
 }
