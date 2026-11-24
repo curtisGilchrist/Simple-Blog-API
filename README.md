@@ -10,19 +10,22 @@ $ npm i fastify
 $ npm i @fastify/mysql
 $ npm pkg set type=module
 ```
-It will not run without a database to connect to. In a mysql server, type:
+It will not run without a database to connect to. In a mariadb server, type:
 ``` SQL
 CREATE database blogs;
-using daatabase blogs;
+using database blogs;
 CREATE TABLE Post (
     PostID INT AUTO_INCREMENT PRIMARY KEY,
     Title VARCHAR(255) NOT NULL,
     Content TEXT NOT NULL,
+    FULLTEXT (Title, Content),
     Category VARCHAR(100) NOT NULL,
     PublicationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE USER 'app_user'@localhost IDENTIFIED BY 'YourDatabasePassword';
+GRANT SELECT, INSERT, UPDATE, DELETE ON 'blogs'.* TO 'app_user'@localhost;
 ```
-See (Secrets)[#Secrets] to get the password set up
+See [Secrets](#Secrets) to get the password set up
 
 ## AutoRun
 I made a dinit script to start the server automatically on-boot, under the user fastify, containing the server in `/opt/fastify-app/`
