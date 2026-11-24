@@ -39,10 +39,24 @@ We must give the database password to the server, so we encrypt it.
 # cd /opt/fastify-app/
 # mkdir -p .secrets && chmod 700 .secrets
 # openssl rand -hex 32 > .secrets/key
-# chmod 600 .secrets/key
-# chown fastify:fastify .secrets/key
 # echo YourDatabasePassword > secret.txt
 # openssl enc -aes-256-cbc -pbkdf2 -salt -in secret.txt -out secret.enc -pass file:.secrets/key
 # rm secret.txt
+# npx @fastify/secure-session > .secrets/secret-key1
+# npx @fastify/secure-session > .secrets/secret-key2
+# chmod 600 .secrets/*
+# chown fastify:fastify .secrets/*
+```
+
+
+## Database Tables for User data storage
+``` SQL
+CREATE TABLE User
+(
+  UserID INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  LoginName NVARCHAR(40) NOT NULL,
+  PasswordHash BINARY(64) NOT NULL,
+  Salt UUID
+);
 ```
 

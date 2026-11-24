@@ -1,9 +1,13 @@
 import Fastify from 'fastify'
 import fastifyMysql from '@fastify/mysql'
 import fastifyHttpQuery from '@thecodepace/fastify-http-query'
+import cors from '@fastify/cors'
+import fastifyPassport from '@fastify/passport'
+import fastifySecureSession from '@fastify/secure-session'
 import { blogsRoutes } from './routes/blogs.js'
 import * as fs from 'fs'
 import * as crypto from 'crypto'
+import * as path from 'path'
 
 function decryptSecret(encryptedPath, keyPath) {
   const file = fs.readFileSync(encryptedPath);
@@ -37,6 +41,23 @@ const fastify = Fastify({
   trustProxy: '127.0.0.1'
 })
 
+fastify.register(cors, {
+  origin: 'http://localhost:3000',
+  credentials: true
+})
+
+fastify.register(fastifySecureSession, {
+  sessionName: 'session',
+  key: fs.readFileSync('.secrets/secret-key1'),
+  expiry: 24 * 60 * 60,
+  cookie: {
+    path: '/'
+  }
+})
+
+fastify.register(fastifyPassport.initialize())
+fastify.register(fastifyPassport.secureSession())
+
 const dbPassword = decryptSecret('secret.enc', '.secrets/key');
 
 fastify.register(fastifyMysql, {
@@ -56,6 +77,14 @@ fastify.register(blogsRoutes)
 
 fastify.get('/health', async () => {
   return {status: 'ok' }
+})
+
+fastify.get('/', (request, reply) => {
+  reply.code(200);
+  return {
+    message: 'Hello World - authenticated blog server',
+    authenticated: request.isAuthenticated ? request.isAuthenticated() : false
+  }
 })
 
 try {
